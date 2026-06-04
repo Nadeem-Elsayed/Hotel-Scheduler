@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
+import { Employee } from '../types';
 
 interface ShiftFormProps {
   onClose: () => void;
   onSuccess: () => void;
+  initialDate?: string; // <-- Add this new optional prop
 }
 
-export default function ShiftForm({ onClose, onSuccess }: ShiftFormProps) {
-  const today = new Date().toISOString().split('T')[0];
+export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftFormProps) {
+  // If the calendar passes a date, use it. Otherwise, default to today.
+  const today = initialDate || new Date().toISOString().split('T')[0];
+  const [directory, setDirectory] = useState<Employee[]>([]);
 
+  React.useEffect(() => {window.api.getEmployees().then(setDirectory);}, []);
   const [formData, setFormData] = useState({
     employeeName: '',
     role: 'Reception Desk',
-    shiftDate: today,
+    shiftDate: today, // Uses the smart date
     startTime: '07:00',
     endTime: '15:00',
     totalHours: 8,
@@ -42,6 +47,12 @@ export default function ShiftForm({ onClose, onSuccess }: ShiftFormProps) {
         ...prev,
         [name]: name === 'totalHours' ? parseFloat(value) || 0 : value
       };
+
+      // Auto-fill role if they pick a name
+    if (name === 'employeeName') {
+      const selectedEmp = directory.find(emp => emp.name === value);
+      if (selectedEmp) updated.role = selectedEmp.defaultRole;
+    }
 
       // If the manager changes the time, automatically update the payroll hours
       if (name === 'startTime' || name === 'endTime') {
@@ -80,7 +91,12 @@ export default function ShiftForm({ onClose, onSuccess }: ShiftFormProps) {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
           <div>
             <label>Employee Name *</label>
-            <input required type="text" name="employeeName" value={formData.employeeName} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+            <select required name="employeeName" value={formData.employeeName} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+              <option value="" disabled>Select Employee...</option>
+              {directory.map(emp => (
+                <option key={emp.id} value={emp.name}>{emp.name}</option>
+              ))}
+            </select>
           </div>
 
           <div style={{ display: 'flex', gap: '15px' }}>

@@ -178,3 +178,42 @@ ipcMain.handle('update-shift', async (_, id: number, updateData) => {
     });
   });
 });
+
+// --- EMPLOYEE DIRECTORY IPC HANDLERS ---
+ipcMain.handle('get-employees', async () => {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM employees ORDER BY name ASC', [], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+});
+
+ipcMain.handle('add-employee', async (_, empData) => {
+  return new Promise((resolve) => {
+    const query = `INSERT INTO employees (name, defaultRole) VALUES (?, ?)`;
+    db.run(query, [empData.name, empData.defaultRole], function (err) {
+      if (err) resolve({ success: false, error: err.message });
+      else resolve({ success: true, id: this.lastID });
+    });
+  });
+});
+
+ipcMain.handle('archive-employee', async (_, id: number) => {
+  return new Promise((resolve) => {
+    const query = `UPDATE employees SET status = 'Archived' WHERE id = ?`;
+    db.run(query, [id], (err) => {
+      if (err) resolve({ success: false, error: err.message });
+      else resolve({ success: true });
+    });
+  });
+});
+
+ipcMain.handle('get-roles', async () => {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM roles', [], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+});

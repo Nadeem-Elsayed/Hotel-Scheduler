@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { Guest, Shift } from './types'; // Make sure Shift is imported
+import { Guest, Shift, Employee } from './types'; // Make sure Shift is imported
+
 
 contextBridge.exposeInMainWorld('api', {
   // --- Guest Operations ---
@@ -11,4 +12,11 @@ contextBridge.exposeInMainWorld('api', {
   getShiftsByRange: (startDate: string, endDate: string) => ipcRenderer.invoke('get-shifts-by-range', startDate, endDate),
   addShift: (shiftData: Omit<Shift, 'id'>) => ipcRenderer.invoke('add-shift', shiftData),
   updateShift: (id: number, updateData: Partial<Shift>) => ipcRenderer.invoke('update-shift', id, updateData),
+
+  // --- Employee Operations ---
+  getEmployees: () => ipcRenderer.invoke('get-employees'),
+  addEmployee: (employee: Omit<Employee, 'id'>) => ipcRenderer.invoke('add-employee', employee),
+  archiveEmployee: (id: number) => ipcRenderer.invoke('archive-employee', id),
+
+  getRoles: () => ipcRenderer.invoke('get-roles'),
 });

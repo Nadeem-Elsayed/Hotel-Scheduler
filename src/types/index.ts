@@ -22,20 +22,57 @@ export interface Guest {
   notes: string;
   status: string;
 }
+export interface Employee {
+  id: number;
+  name: string;
+  defaultRole: string;
+}
 
-// Update the global window definition to include the new shift IPC channels
+export interface Role {
+  id: number;
+  name: string;
+  color: string;
+}
+
+
 declare global {
   interface Window {
     api: {
       // Guest Channels
       getGuestsByDate: (targetDate: string) => Promise<Guest[]>;
-      addGuest: (guestData: Omit<Guest, 'id'>) => Promise<{ success: boolean; id?: number; error?: string }>;
-      updateGuest: (id: number, updateData: Partial<Guest>) => Promise<{ success: boolean; error?: string }>;
-      
+      addGuest: (
+        guestData: Omit<Guest, "id">,
+      ) => Promise<{ success: boolean; id?: number; error?: string }>;
+      updateGuest: (
+        id: number,
+        updateData: Partial<Guest>,
+      ) => Promise<{ success: boolean; error?: string }>;
+
       // Shift Channels
-      getShiftsByRange: (startDate: string, endDate: string) => Promise<Shift[]>;
-      addShift: (shiftData: Omit<Shift, 'id'>) => Promise<{ success: boolean; id?: number; error?: string }>;
-      updateShift: (id: number, updateData: Partial<Shift>) => Promise<{ success: boolean; error?: string }>;
+      getShiftsByRange: (
+        startDate: string,
+        endDate: string,
+      ) => Promise<Shift[]>;
+      addShift: (
+        shiftData: Omit<Shift, "id">,
+      ) => Promise<{ success: boolean; id?: number; error?: string }>;
+      updateShift: (
+        id: number,
+        updateData: Partial<Shift>,
+      ) => Promise<{ success: boolean; error?: string }>;
+
+      //employees
+      getEmployees: () => Promise<Employee[]>;
+      addEmployee: (
+        employee: Omit<Employee, "id">,
+      ) => Promise<{ success: boolean; id?: number; error?: string }>;
+      archiveEmployee: (
+        id: number,
+      ) => Promise<{ success: boolean; error?: string }>;
+
+      // Inside your Window interface:
+      getRoles: () => Promise<Role[]>;
+      // Update the global window definition to include the new shift IPC channels
     };
   }
 }

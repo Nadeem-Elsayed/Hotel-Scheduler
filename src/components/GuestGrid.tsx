@@ -15,8 +15,11 @@ export default function GuestGrid({ guests, onRowClick }: GuestGridProps) {
           <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Room</th>
           <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Check In</th>
           <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Check Out</th>
-          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Booking Channel</th>
-          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Transaction Medium</th>
+          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Balance</th>
+          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Payment Method</th>
+          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Paid</th>
+          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Total</th>
+          <th style={{ padding: '10px', borderBottom: '2px solid #ddd' }}>Transaction Status</th>
         </tr>
       </thead>
       <tbody>
@@ -24,6 +27,9 @@ export default function GuestGrid({ guests, onRowClick }: GuestGridProps) {
           const isExpected = guest.status === 'Expected';
           const isConfirmed = guest.status === 'Confirmed';
           const isCheckedOut = guest.status === 'Checked Out';
+          
+          // Calculate dynamic balance for the grid
+          const balance = (guest.totalAmount || 0) - (guest.amountPaid || 0);
 
           return (
             <tr 
@@ -53,7 +59,14 @@ export default function GuestGrid({ guests, onRowClick }: GuestGridProps) {
               <td style={{ padding: '10px' }}>{guest.roomNumber}</td>
               <td style={{ padding: '10px' }}>{guest.checkInDate}</td>
               <td style={{ padding: '10px' }}>{guest.checkOutDate}</td>
+              
+              {/* Financial Data Columns */}
+              <td style={{ padding: '10px', fontWeight: 'bold', color: balance > 0 ? '#d9534f' : '#28a745' }}>
+                ${balance.toFixed(2)}
+              </td>
               <td style={{ padding: '10px' }}>{guest.paymentMethod}</td>
+              <td style={{ padding: '10px' }}>${(guest.amountPaid || 0).toFixed(2)}</td>
+              <td style={{ padding: '10px' }}>${(guest.totalAmount || 0).toFixed(2)}</td>
               <td style={{ padding: '10px' }}>{guest.paymentStatus}</td>
             </tr>
           );

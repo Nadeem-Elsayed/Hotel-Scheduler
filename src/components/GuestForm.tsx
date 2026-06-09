@@ -7,11 +7,9 @@ interface GuestFormProps {
 }
 
 export default function GuestForm({ onClose, onSuccess }: GuestFormProps) {
-  // 1. Calculate Today
   const todayDate = new Date();
   const today = todayDate.toISOString().split('T')[0];
 
-  // 2. Calculate Tomorrow (safely handles month and year rollovers)
   const tomorrowDate = new Date(todayDate);
   tomorrowDate.setDate(tomorrowDate.getDate() + 1);
   const tomorrow = tomorrowDate.toISOString().split('T')[0];
@@ -20,13 +18,13 @@ export default function GuestForm({ onClose, onSuccess }: GuestFormProps) {
     guestName: '',
     roomNumber: '',
     checkInDate: today,
-    checkOutDate: tomorrow, // <-- Now defaults to one day later
+    checkOutDate: tomorrow, 
     totalAmount: 0,
     amountPaid: 0,
     paymentMethod: 'Walk-in',
     paymentStatus: 'Pending',
     notes: '',
-    status: 'Checked In' // Walk-ins check in immediately. Reservations will be set to 'Confirmed'.
+    status: 'Confirmed' 
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -74,7 +72,7 @@ export default function GuestForm({ onClose, onSuccess }: GuestFormProps) {
               <input type="text" name="roomNumber" value={formData.roomNumber} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
             </div>
             <div style={{ flex: 1 }}>
-              <label>Booking Platform</label>
+              <label>Payment Method</label>
               <input type="text" name="paymentMethod" placeholder="e.g., Expedia, Walk-in..." value={formData.paymentMethod} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
             </div>
             <div style={{ flex: 1 }}>

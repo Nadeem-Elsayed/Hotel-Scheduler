@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shift } from '../types';
 
 interface DailyRosterProps {
@@ -9,18 +9,20 @@ interface DailyRosterProps {
 }
 
 export default function DailyRoster({ date, shifts, onClose, onShiftClick }: DailyRosterProps) {
+  const [roles, setRoles] = useState<any[]>([]);
+
+  useEffect(() => {
+    window.api.getRoles().then(setRoles);
+  }, []);
+
   // Add day of week to the title
   const dayOfWeek = new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long' });
   const displayDate = `${dayOfWeek}, ${date}`;
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'Night Audit': return '#552cb7';
-      case 'Reception Desk': return '#026ba6';
-      case 'Housekeeping': return '#a64402';
-      case 'Maintenance': return '#d4a017';
-      default: return '#333';
-    }
+  // Dynamic color lookup
+  const getRoleColor = (roleName: string) => {
+    const foundRole = roles.find(r => r.name === roleName);
+    return foundRole ? foundRole.color : '#888'; 
   };
 
   return (
@@ -28,7 +30,7 @@ export default function DailyRoster({ date, shifts, onClose, onShiftClick }: Dai
       <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '90%', height: '90%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
           <h3>Schedule for {displayDate}</h3>
-          <button onClick={onClose}>Close</button>
+          <button onClick={onClose} style={{ cursor: 'pointer' }}>Close</button>
         </div>
 
         {/* Timeline Grid with explicit column tracks */}
@@ -57,7 +59,7 @@ export default function DailyRoster({ date, shifts, onClose, onShiftClick }: Dai
               <div key={s.id} onClick={() => onShiftClick(s)} style={{
                 gridColumn: `${(index % 4) + 2}`, // Cycle through columns 2, 3, 4, 5
                 gridRow: `${startRow} / ${endRow}`,
-                backgroundColor: getRoleColor(s.role) + '30',
+                backgroundColor: getRoleColor(s.role) + '30', // Adds transparency
                 borderLeft: `4px solid ${getRoleColor(s.role)}`,
                 margin: '2px',
                 padding: '5px',

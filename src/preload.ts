@@ -7,11 +7,12 @@ contextBridge.exposeInMainWorld('api', {
   getGuestsByDate: (targetDate: string) => ipcRenderer.invoke('get-guests-by-date', targetDate),
   addGuest: (guestData: Omit<Guest, 'id'>) => ipcRenderer.invoke('add-guest', guestData),
   updateGuest: (id: number, updateData: Partial<Guest>) => ipcRenderer.invoke('update-guest', id, updateData),
-
+  deleteGuest: (id: number) => ipcRenderer.invoke('delete-guest', id),
   // --- Shift Operations ---
   getShiftsByRange: (startDate: string, endDate: string) => ipcRenderer.invoke('get-shifts-by-range', startDate, endDate),
   addShift: (shiftData: Omit<Shift, 'id'>) => ipcRenderer.invoke('add-shift', shiftData),
   updateShift: (id: number, updateData: Partial<Shift>) => ipcRenderer.invoke('update-shift', id, updateData),
+  deleteShift: (id: number) => ipcRenderer.invoke('delete-shift', id),
 
   // --- Employee Operations ---
   getEmployees: () => ipcRenderer.invoke('get-employees'),
@@ -20,4 +21,5 @@ contextBridge.exposeInMainWorld('api', {
 
   getRoles: () => ipcRenderer.invoke('get-roles'),
   addRole: (roleData: any) => ipcRenderer.invoke('add-role', roleData),
+  deleteRole: (id: number) => ipcRenderer.invoke('delete-role', id),
 });

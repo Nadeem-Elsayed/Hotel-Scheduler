@@ -141,6 +141,45 @@ export default function ShiftDashboard({ onBack }: ShiftDashboardProps) {
         </div>
       </div>
 
+      {/* Navigation for Pay Periods */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '10px' }}>
+        <button 
+          onClick={() => setPeriodOffset(prev => Math.max(prev - 1, -26))}
+          disabled={periodOffset <= -26}
+          style={{ 
+            padding: '8px 16px', 
+            cursor: periodOffset <= -26 ? 'not-allowed' : 'pointer', 
+            backgroundColor: '#e9ecef', 
+            border: 'none', 
+            borderRadius: '4px', 
+            fontWeight: 'bold',
+            opacity: periodOffset <= -26 ? 0.5 : 1
+          }}
+        >
+          &larr; Previous Period
+        </button>
+        
+        <span style={{ fontWeight: 'bold', fontSize: '1.1em' }}>
+          {currentPeriod.start} to {currentPeriod.end}
+        </span>
+        
+        <button 
+          onClick={() => setPeriodOffset(prev => Math.min(prev + 1, 26))}
+          disabled={periodOffset >= 26}
+          style={{ 
+            padding: '8px 16px', 
+            cursor: periodOffset >= 26 ? 'not-allowed' : 'pointer', 
+            backgroundColor: '#e9ecef', 
+            border: 'none', 
+            borderRadius: '4px', 
+            fontWeight: 'bold',
+            opacity: periodOffset >= 26 ? 0.5 : 1
+          }}
+        >
+          Next Period &rarr;
+        </button>
+      </div>
+
       <ShiftCalendar
         shifts={shifts}
         periodStart={currentPeriod.start}

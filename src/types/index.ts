@@ -47,6 +47,7 @@ declare global {
         id: number,
         updateData: Partial<Guest>,
       ) => Promise<{ success: boolean; error?: string }>;
+      deleteGuest: (id: number) => Promise<{ success: boolean; error?: string }>;
 
       // Shift Channels
       getShiftsByRange: (
@@ -60,6 +61,7 @@ declare global {
         id: number,
         updateData: Partial<Shift>,
       ) => Promise<{ success: boolean; error?: string }>;
+      deleteShift: (id: number) => Promise<{ success: boolean; error?: string }>;
 
       //employees
       getEmployees: () => Promise<Employee[]>;
@@ -73,6 +75,7 @@ declare global {
       // Inside your Window interface:
       getRoles: () => Promise<any[]>;
       addRole: (roleData: { name: string; color: string }) => Promise<{ success: boolean }>;
+      deleteRole: (id: number) => Promise<{ success: boolean }>;
     };
   }
 }

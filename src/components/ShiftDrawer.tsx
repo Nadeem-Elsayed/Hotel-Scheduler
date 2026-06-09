@@ -9,9 +9,14 @@ interface ShiftDrawerProps {
 
 export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerProps) {
   const [directory, setDirectory] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
 
   useEffect(() => {
-    window.api.getEmployees().then(setDirectory);
+    // Filter archived employees and load dynamic roles
+    window.api.getEmployees().then(emps => {
+      setDirectory(emps.filter((e: any) => e.status !== 'Archived'));
+    });
+    window.api.getRoles().then(setRoles);
   }, []);
   
   const [editData, setEditData] = useState<Partial<Shift>>({
@@ -56,7 +61,6 @@ export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerPr
         [name]: name === 'totalHours' ? parseFloat(value) || 0 : value
       };
 
-      // Auto-fill role if they change the employee
       if (name === 'employeeName') {
         const selectedEmp = directory.find(emp => emp.name === value);
         if (selectedEmp) updated.role = selectedEmp.defaultRole;
@@ -78,6 +82,19 @@ export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerPr
       onClose();   
     } else {
       alert('Failed to update shift: ' + response.error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this shift?")) {
+      const response = await window.api.deleteShift(shift.id);
+      
+      if (response.success) {
+        onSuccess(); 
+        onClose();   
+      } else {
+        alert('Failed to delete shift: ' + response.error);
+      }
     }
   };
 
@@ -148,11 +165,9 @@ export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerPr
             onChange={handleChange}
             style={{ width: "100%", padding: "8px" }}
           >
-            <option value="Reception Desk">Reception Desk</option>
-            <option value="Night Audit">Night Audit</option>
-            <option value="Housekeeping">Housekeeping</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Management">Management</option>
+            {roles.map(r => (
+              <option key={r.id} value={r.name}>{r.name}</option>
+            ))}
           </select>
         </div>
         <div style={{ flex: 1 }}>
@@ -229,22 +244,38 @@ export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerPr
         />
       </div>
 
-      <button
-        onClick={handleUpdate}
-        style={{
-          width: "100%",
-          padding: "12px",
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          fontWeight: "bold",
-          marginTop: "10px",
-        }}
-      >
-        Save Updates
-      </button>
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+        <button
+          onClick={handleDelete}
+          style={{
+            flex: 1,
+            padding: "12px",
+            backgroundColor: "#dc3545",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Delete
+        </button>
+        <button
+          onClick={handleUpdate}
+          style={{
+            flex: 2,
+            padding: "12px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Save Updates
+        </button>
+      </div>
     </div>
   );
 }

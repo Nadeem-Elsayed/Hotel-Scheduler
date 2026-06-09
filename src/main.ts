@@ -232,3 +232,33 @@ ipcMain.handle('add-role', async (_, roleData) => {
     });
   });
 });
+
+ipcMain.handle('delete-role', async (_, id: number) => {
+  return new Promise((resolve) => {
+    db.run(`DELETE FROM roles WHERE id = ?`, [id], (err) => {
+      resolve({ success: !err });
+    });
+  });
+});
+
+// Add this alongside your other ipcMain handlers
+ipcMain.handle('delete-shift', async (_, id: number) => {
+  return new Promise((resolve) => {
+    db.run(`DELETE FROM shifts WHERE id = ?`, [id], (err) => {
+      if (err) {
+        console.error("Failed to delete shift:", err);
+        resolve({ success: false, error: err.message });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});
+
+ipcMain.handle('delete-guest', async (_, id: number) => {
+  return new Promise((resolve) => {
+    db.run(`DELETE FROM guests WHERE id = ?`, [id], (err) => {
+      resolve({ success: !err, error: err?.message });
+    });
+  });
+});

@@ -4,31 +4,32 @@ import { Employee } from '../types';
 interface ShiftFormProps {
   onClose: () => void;
   onSuccess: () => void;
-  initialDate?: string; // <-- Add this new optional prop
+  initialDate?: string; 
 }
 
 export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftFormProps) {
-  // If the calendar passes a date, use it. Otherwise, default to today.
   const today = initialDate || new Date().toISOString().split('T')[0];
   const [directory, setDirectory] = useState<Employee[]>([]);
   const [roles, setRoles] = useState<any[]>([]);
 
-  React.useEffect(() => {window.api.getEmployees().then(setDirectory);}, []);
+  // Fetch employees and filter out archived ones
+  React.useEffect(() => {
+    window.api.getEmployees().then(emps => {
+      setDirectory(emps.filter((e: any) => e.status !== 'Archived'));
+    });
+    window.api.getRoles().then(setRoles);
+  }, []);
+
   const [formData, setFormData] = useState({
     employeeName: '',
-    role: 'Reception Desk',
-    shiftDate: today, // Uses the smart date
+    role: '',
+    shiftDate: today, 
     startTime: '07:00',
     endTime: '15:00',
     totalHours: 8,
     notes: ''
   });
 
-  React.useEffect(() => {
-  window.api.getRoles().then(setRoles);
-}, []);
-
-  // Automatically calculate hours, safely handling overnight shifts
   const calculateHours = (start: string, end: string) => {
     if (!start || !end) return 0;
     const [startHour, startMin] = start.split(':').map(Number);
@@ -36,7 +37,6 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
     
     let hours = (endHour + endMin / 60) - (startHour + startMin / 60);
     
-    // If the shift ends before it starts, it crossed midnight into the next day
     if (hours < 0) {
       hours += 24; 
     }
@@ -53,13 +53,11 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
         [name]: name === 'totalHours' ? parseFloat(value) || 0 : value
       };
 
-      // Auto-fill role if they pick a name
-    if (name === 'employeeName') {
-      const selectedEmp = directory.find(emp => emp.name === value);
-      if (selectedEmp) updated.role = selectedEmp.defaultRole;
-    }
+      if (name === 'employeeName') {
+        const selectedEmp = directory.find(emp => emp.name === value);
+        if (selectedEmp) updated.role = selectedEmp.defaultRole;
+      }
 
-      // If the manager changes the time, automatically update the payroll hours
       if (name === 'startTime' || name === 'endTime') {
         updated.totalHours = calculateHours(updated.startTime, updated.endTime);
       }
@@ -74,8 +72,8 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
     const response = await window.api.addShift(formData);
     
     if (response.success) {
-      onSuccess(); // Refresh the grid
-      onClose();   // Close the modal
+      onSuccess(); 
+      onClose();   
     } else {
       alert('Failed to save shift: ' + response.error);
     }
@@ -108,6 +106,7 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
             <div style={{ flex: 1 }}> 
               <label>Role</label>
               <select name="role" value={formData.role} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
+                <option value="" disabled>Select Role...</option>
                 {roles.map(r => (
                   <option key={r.id} value={r.name}>{r.name}</option>
                 ))}

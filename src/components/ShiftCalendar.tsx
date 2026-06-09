@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shift } from '../types';
 
 interface ShiftCalendarProps {
@@ -8,19 +8,22 @@ interface ShiftCalendarProps {
 }
 
 export default function ShiftCalendar({ shifts, periodStart, onDayClick }: ShiftCalendarProps) {
+  const [roles, setRoles] = useState<any[]>([]);
+
+  useEffect(() => {
+    window.api.getRoles().then(setRoles);
+  }, []);
+
   const days = Array.from({ length: 14 }, (_, i) => {
     const d = new Date(periodStart + 'T12:00:00');
     d.setDate(d.getDate() + i);
     return d.toISOString().split('T')[0];
   });
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'Night Audit': return '#552cb7';
-      case 'Reception Desk': return '#026ba6';
-      case 'Housekeeping': return '#a64402';
-      default: return '#333';
-    }
+  // Dynamic color lookup
+  const getRoleColor = (roleName: string) => {
+    const foundRole = roles.find(r => r.name === roleName);
+    return foundRole ? foundRole.color : '#888'; // Default to gray if role is missing
   };
 
   return (
@@ -39,7 +42,7 @@ export default function ShiftCalendar({ shifts, periodStart, onDayClick }: Shift
               <div key={s.id} style={{ 
                 padding: '3px 6px', 
                 borderRadius: '4px', 
-                backgroundColor: getRoleColor(s.role) + '15', 
+                backgroundColor: getRoleColor(s.role) + '15', // Adds transparency to the background
                 borderLeft: `4px solid ${getRoleColor(s.role)}`,
                 fontSize: '0.75em', 
                 fontWeight: 'bold',

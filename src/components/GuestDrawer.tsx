@@ -16,7 +16,7 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
     paymentMethod: guest.paymentMethod,
     paymentStatus: guest.paymentStatus,
     notes: guest.notes,
-    status: guest.status // Includes the Arrival Status field
+    status: guest.status
   });
 
   // Re-sync if the user clicks a different guest
@@ -35,7 +35,17 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
 
   const computedBalance = (editData.totalAmount || 0) - (editData.amountPaid || 0);
 
-  // Includes the HTMLSelectElement fix for the dropdowns
+  // Calculate Average Daily Rate (ADR)
+  let diffDays = 1;
+  if (editData.checkInDate && editData.checkOutDate) {
+    const start = new Date(editData.checkInDate);
+    const end = new Date(editData.checkOutDate);
+    const diffTime = end.getTime() - start.getTime();
+    const calculatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (calculatedDays > 0) diffDays = calculatedDays;
+  }
+  const adr = ((editData.totalAmount || 0) / diffDays).toFixed(2);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setEditData(prev => ({
@@ -52,6 +62,19 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
       onClose();   
     } else {
       alert('Failed to update guest: ' + response.error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this guest record? This action cannot be undone.")) {
+      const response = await window.api.deleteGuest(guest.id);
+      
+      if (response.success) {
+        onSuccess(); 
+        onClose();   
+      } else {
+        alert('Failed to delete guest: ' + response.error);
+      }
     }
   };
 
@@ -90,19 +113,23 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
         </div>
       </div>
 
+      {/* Financial Block with Balance and ADR */}
       <div style={{ padding: '15px', backgroundColor: computedBalance <= 0 ? '#d4edda' : '#fff3cd', borderRadius: '5px', marginBottom: '15px' }}>
         <div style={{ fontSize: '1.2em', color: computedBalance <= 0 ? '#155724' : '#856404' }}>
           <strong>Remaining Balance: </strong> ${computedBalance.toFixed(2)}
         </div>
+        <div style={{ fontSize: '0.9em', color: '#666', marginTop: '6px' }}>
+          <strong>Avg. Daily Rate: </strong> ${adr} / night 
+        </div>
       </div>
 
       <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em' }}>Booking Channel</label>
+        <label style={{ display: 'block', fontSize: '0.9em' }}>Payment Method</label>
         <input type="text" name="paymentMethod" value={editData.paymentMethod} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
       </div>
 
       <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em' }}>Transaction Medium</label>
+        <label style={{ display: 'block', fontSize: '0.9em' }}>Transaction Status</label>
         <input type="text" name="paymentStatus" value={editData.paymentStatus} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
       </div>
 
@@ -121,12 +148,38 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
         <textarea name="notes" value={editData.notes} onChange={handleChange} style={{ width: '100%', padding: '6px', minHeight: '80px' }} />
       </div>
 
-      <button 
-        onClick={handleUpdate}
-        style={{ width: '100%', padding: '12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', marginTop: '10px' }}
-      >
-        Save Updates
-      </button>
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+        <button
+          onClick={handleDelete}
+          style={{
+            flex: 1,
+            padding: "12px",
+            backgroundColor: "#dc3545",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Delete
+        </button>
+        <button
+          onClick={handleUpdate}
+          style={{
+            flex: 2,
+            padding: "12px",
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Save Updates
+        </button>
+      </div>
     </div>
   );
 }

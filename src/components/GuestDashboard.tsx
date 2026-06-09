@@ -24,10 +24,12 @@ export default function GuestDashboard({ onBack }: GuestDashboardProps) {
   const [selectedGuest, setSelectedGuest] = useState<Guest | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false); 
+  
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadGuests = async () => {
     try {
-      // Fetch based on the currently selected viewDate, not necessarily today
       const data = await window.api.getGuestsByDate(viewDate);
       setGuests(data);
     } catch (error) {
@@ -35,10 +37,16 @@ export default function GuestDashboard({ onBack }: GuestDashboardProps) {
     }
   };
 
-  // Re-fetch data whenever the viewDate toggle changes
   useEffect(() => {
     loadGuests();
   }, [viewDate]);
+
+  // Filter guests based on search input
+  const filteredGuests = guests.filter(g => 
+    g.guestName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (g.roomNumber && g.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    g.status.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
@@ -70,15 +78,24 @@ export default function GuestDashboard({ onBack }: GuestDashboardProps) {
           </div>
         </div>
         
-        <button 
-          onClick={() => setIsFormOpen(true)}
-          style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          + New Reservation
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input 
+            type="text" 
+            placeholder="Search name or room..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minWidth: '200px' }}
+          />
+          <button 
+            onClick={() => setIsFormOpen(true)}
+            style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            + New Reservation
+          </button>
+        </div>
       </div>
       
-      <GuestGrid guests={guests} onRowClick={(guest) => { setSelectedGuest(guest); setIsDrawerOpen(true); }} />
+      <GuestGrid guests={filteredGuests} onRowClick={(guest) => { setSelectedGuest(guest); setIsDrawerOpen(true); }} />
 
       {isDrawerOpen && selectedGuest && (
         <GuestDrawer guest={selectedGuest} onClose={() => { setIsDrawerOpen(false); setSelectedGuest(null); }} onSuccess={loadGuests} />

@@ -19,4 +19,5 @@ contextBridge.exposeInMainWorld('api', {
   archiveEmployee: (id: number) => ipcRenderer.invoke('archive-employee', id),
 
   getRoles: () => ipcRenderer.invoke('get-roles'),
+  addRole: (roleData: any) => ipcRenderer.invoke('add-role', roleData),
 });

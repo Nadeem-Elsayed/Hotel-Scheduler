@@ -217,3 +217,18 @@ ipcMain.handle('get-roles', async () => {
     });
   });
 });
+
+ipcMain.handle('add-role', async (_, roleData) => {
+  return new Promise((resolve) => {
+    // Note: Ensure your roles table exists before running this!
+    const query = `INSERT INTO roles (name, color) VALUES (?, ?)`;
+    db.run(query, [roleData.name, roleData.color], (err) => {
+      if (err) {
+        console.error("Role insertion failed:", err);
+        resolve({ success: false });
+      } else {
+        resolve({ success: true });
+      }
+    });
+  });
+});

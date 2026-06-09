@@ -71,8 +71,8 @@ declare global {
       ) => Promise<{ success: boolean; error?: string }>;
 
       // Inside your Window interface:
-      getRoles: () => Promise<Role[]>;
-      // Update the global window definition to include the new shift IPC channels
+      getRoles: () => Promise<any[]>;
+      addRole: (roleData: { name: string; color: string }) => Promise<{ success: boolean }>;
     };
   }
 }

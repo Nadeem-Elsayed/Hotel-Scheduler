@@ -9,6 +9,8 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [newName, setNewName] = useState('');
   const [newRole, setNewRole] = useState('Reception Desk');
+  const [newRoleName, setNewRoleName] = useState('');
+  const [newRoleColor, setNewRoleColor] = useState('#007bff');
 
   const loadEmployees = async () => {
     const data = await window.api.getEmployees();
@@ -40,6 +42,16 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
       loadEmployees();
     }
   };
+
+  const handleAddRole = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!newRoleName.trim()) return;
+  
+  // You will need a new IPC: window.api.addRole({ name, color })
+  await window.api.addRole({ name: newRoleName, color: newRoleColor });
+  setNewRoleName('');
+  // Refresh your roles list here...
+};
 
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
@@ -76,6 +88,29 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
             </div>
           ))}
         </div>
+
+        {/* --- ADD THE NEW SECTION HERE --- */}
+      <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
+        <h4>Manage Roles & Colors</h4>
+        <form onSubmit={handleAddRole} style={{ display: 'flex', gap: '10px' }}>
+          <input 
+            type="text" 
+            placeholder="New Role Name" 
+            value={newRoleName} 
+            onChange={e => setNewRoleName(e.target.value)} 
+            style={{ flex: 1, padding: '8px' }} 
+          />
+          <input 
+            type="color" 
+            value={newRoleColor} 
+            onChange={e => setNewRoleColor(e.target.value)} 
+            style={{ width: '50px', cursor: 'pointer' }} 
+          />
+          <button type="submit" style={{ padding: '8px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+            Add
+          </button>
+        </form>
+      </div>
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
   // If the calendar passes a date, use it. Otherwise, default to today.
   const today = initialDate || new Date().toISOString().split('T')[0];
   const [directory, setDirectory] = useState<Employee[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
 
   React.useEffect(() => {window.api.getEmployees().then(setDirectory);}, []);
   const [formData, setFormData] = useState({
@@ -22,6 +23,10 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
     totalHours: 8,
     notes: ''
   });
+
+  React.useEffect(() => {
+  window.api.getRoles().then(setRoles);
+}, []);
 
   // Automatically calculate hours, safely handling overnight shifts
   const calculateHours = (start: string, end: string) => {
@@ -100,14 +105,12 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
           </div>
 
           <div style={{ display: 'flex', gap: '15px' }}>
-            <div style={{ flex: 1 }}>
+            <div style={{ flex: 1 }}> 
               <label>Role</label>
               <select name="role" value={formData.role} onChange={handleChange} style={{ width: '100%', padding: '8px' }}>
-                <option value="Reception Desk">Reception Desk</option>
-                <option value="Night Audit">Night Audit</option>
-                <option value="Housekeeping">Housekeeping</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Management">Management</option>
+                {roles.map(r => (
+                  <option key={r.id} value={r.name}>{r.name}</option>
+                ))}
               </select>
             </div>
             <div style={{ flex: 1 }}>

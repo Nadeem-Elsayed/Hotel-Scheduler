@@ -45,6 +45,11 @@ export const initDB = () => {
       color TEXT NOT NULL
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY,
+      value TEXT
+    )`);
+
     // 2. Safe Migrations (Checks if column exists before adding)
     
     // Fix for Guests table status

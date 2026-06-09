@@ -68,12 +68,12 @@ export default function GuestForm({ onClose, onSuccess }: GuestFormProps) {
 
           <div style={{ display: 'flex', gap: '15px' }}>
             <div style={{ flex: 1 }}>
-              <label>Room Number</label>
-              <input type="text" name="roomNumber" value={formData.roomNumber} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+              <label>Room Number *</label>
+              <input required type="text" name="roomNumber" value={formData.roomNumber} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
             </div>
             <div style={{ flex: 1 }}>
-              <label>Payment Method</label>
-              <input type="text" name="paymentMethod" placeholder="e.g., Expedia, Walk-in..." value={formData.paymentMethod} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
+              <label>Payment Method*</label>
+              <input required type="text" name="paymentMethod" placeholder="e.g., Expedia, Walk-in..." value={formData.paymentMethod} onChange={handleChange} style={{ width: '100%', padding: '8px' }} />
             </div>
             <div style={{ flex: 1 }}>
               <label>Arrival Status</label>

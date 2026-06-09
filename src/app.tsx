@@ -3,10 +3,11 @@ import { createRoot } from 'react-dom/client';
 import LandingPage from './components/LandingPage';
 import GuestDashboard from './components/GuestDashboard';
 import ShiftDashboard from './components/ShiftDashboard';
+import SettingsPage from './components/SettingsPage';
 
-type ViewState = 'landing' | 'guests' | 'shifts';
+// Added 'settings' to the ViewState
+type ViewState = 'landing' | 'guests' | 'shifts' | 'settings';
 
-// 1. The Main Router Component
 function App() {
   const [currentView, setCurrentView] = useState<ViewState>('landing');
 
@@ -23,11 +24,14 @@ function App() {
       {currentView === 'shifts' && (
         <ShiftDashboard onBack={() => setCurrentView('landing')} />
       )}
+
+      {currentView === 'settings' && (
+        <SettingsPage onBack={() => setCurrentView('landing')} />
+      )}
     </div>
   );
 }
 
-// 2. The React Anchor (This is what was missing!)
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);

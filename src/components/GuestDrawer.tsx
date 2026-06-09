@@ -66,14 +66,14 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
   };
 
   const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this guest record? This action cannot be undone.")) {
-      const response = await window.api.deleteGuest(guest.id);
-      
-      if (response.success) {
-        onSuccess(); 
-        onClose();   
+    const isConfirmed = await window.api.showConfirm('Are you sure you want to permanently delete this record?', 'Confirm Deletion');
+    
+    if (isConfirmed) {
+      const res = await window.api.deleteGuest(guest.id); // or deleteShift
+      if (res.success) {
+        onSuccess();
       } else {
-        alert('Failed to delete guest: ' + response.error);
+        await window.api.showMessage('Failed to delete: ' + res.error, 'Error');
       }
     }
   };

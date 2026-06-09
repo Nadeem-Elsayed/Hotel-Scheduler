@@ -36,46 +36,43 @@ export interface Role {
 
 
 declare global {
-  interface Window {
-    api: {
-      // Guest Channels
-      getGuestsByDate: (targetDate: string) => Promise<Guest[]>;
-      addGuest: (
-        guestData: Omit<Guest, "id">,
-      ) => Promise<{ success: boolean; id?: number; error?: string }>;
-      updateGuest: (
-        id: number,
-        updateData: Partial<Guest>,
-      ) => Promise<{ success: boolean; error?: string }>;
-      deleteGuest: (id: number) => Promise<{ success: boolean; error?: string }>;
+  // Inside src/types/index.ts
+export interface Window {
+  api: {
+    // Shifts
+    getShiftsByRange: (start: string, end: string) => Promise<Shift[]>;
+    addShift: (shift: Partial<Shift>) => Promise<{ success: boolean; id?: number; error?: string }>;
+    updateShift: (id: number, shift: Partial<Shift>) => Promise<{ success: boolean; error?: string }>;
+    deleteShift: (id: number) => Promise<{ success: boolean; error?: string }>;
+    
+    // Guests
+    getGuestsByDate: (dateStr: string) => Promise<Guest[]>;
+    addGuest: (guest: Partial<Guest>) => Promise<{ success: boolean; id?: number; error?: string }>;
+    updateGuest: (id: number, guest: Partial<Guest>) => Promise<{ success: boolean; error?: string }>;
+    deleteGuest: (id: number) => Promise<{ success: boolean; error?: string }>;
 
-      // Shift Channels
-      getShiftsByRange: (
-        startDate: string,
-        endDate: string,
-      ) => Promise<Shift[]>;
-      addShift: (
-        shiftData: Omit<Shift, "id">,
-      ) => Promise<{ success: boolean; id?: number; error?: string }>;
-      updateShift: (
-        id: number,
-        updateData: Partial<Shift>,
-      ) => Promise<{ success: boolean; error?: string }>;
-      deleteShift: (id: number) => Promise<{ success: boolean; error?: string }>;
+    // Employees & Roles
+    getEmployees: () => Promise<Employee[]>;
+    addEmployee: (emp: Partial<Employee>) => Promise<{ success: boolean; id?: number; error?: string }>;
+    archiveEmployee: (id: number) => Promise<{ success: boolean; error?: string }>;
+    getRoles: () => Promise<any[]>;
+    addRole: (role: any) => Promise<{ success: boolean }>;
+    deleteRole: (id: number) => Promise<{ success: boolean }>;
 
-      //employees
-      getEmployees: () => Promise<Employee[]>;
-      addEmployee: (
-        employee: Omit<Employee, "id">,
-      ) => Promise<{ success: boolean; id?: number; error?: string }>;
-      archiveEmployee: (
-        id: number,
-      ) => Promise<{ success: boolean; error?: string }>;
+    // CSV Exports
+    exportCalendarCSV: (start: string, end: string) => Promise<{ success: boolean; error?: string }>;
+    exportYearlyCSV: (year: string) => Promise<{ success: boolean; error?: string }>;
 
-      // Inside your Window interface:
-      getRoles: () => Promise<any[]>;
-      addRole: (roleData: { name: string; color: string }) => Promise<{ success: boolean }>;
-      deleteRole: (id: number) => Promise<{ success: boolean }>;
-    };
-  }
+    // Settings & Data Management (The missing handlers)
+    getSetting: (key: string, defaultValue: string) => Promise<string>;
+    updateSetting: (key: string, value: string) => Promise<{ success: boolean }>;
+    openBackupFolder: () => Promise<void>;
+    restoreDatabase: () => Promise<{ success: boolean; error?: string }>;
+    purgeDatabase: () => Promise<{ success: boolean; error?: string }>;
+    importCSV: (type: 'guests' | 'shifts') => Promise<{ success: boolean; error?: string }>;
+
+    showMessage: (message: string, title?: string) => Promise<void>;
+    showConfirm: (message: string, title?: string) => Promise<boolean>;
+  };
+}
 }

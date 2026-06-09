@@ -22,4 +22,17 @@ contextBridge.exposeInMainWorld('api', {
   getRoles: () => ipcRenderer.invoke('get-roles'),
   addRole: (roleData: any) => ipcRenderer.invoke('add-role', roleData),
   deleteRole: (id: number) => ipcRenderer.invoke('delete-role', id),
+
+  exportYearlyCSV: (year: string) => ipcRenderer.invoke('export-yearly-csv', year),
+  exportCalendarCSV: (start: string, end: string) => ipcRenderer.invoke('export-calendar-csv', start, end),
+
+  openBackupFolder: () => ipcRenderer.invoke('open-backup-folder'),
+  restoreDatabase: () => ipcRenderer.invoke('restore-database'),
+  getSetting: (key: string, defaultValue: string) => ipcRenderer.invoke('get-setting', key, defaultValue),
+  updateSetting: (key: string, value: string) => ipcRenderer.invoke('update-setting', key, value),
+  purgeDatabase: () => ipcRenderer.invoke('purge-database'),
+  importCSV: (type: 'guests' | 'shifts') => ipcRenderer.invoke('import-csv', type),
+
+  showMessage: (message: string, title?: string) => ipcRenderer.invoke('show-message', message, title),
+  showConfirm: (message: string, title?: string) => ipcRenderer.invoke('show-confirm', message, title),
 });

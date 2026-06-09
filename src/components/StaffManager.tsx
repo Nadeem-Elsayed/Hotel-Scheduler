@@ -51,8 +51,9 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
     }
   };
 
-  const handleArchiveEmployee = async (id: number) => {
-    if (confirm("Archive this employee? They will be hidden from the scheduler, but payroll history will remain.")) {
+  const handleArchive = async (id: number) => {
+    const isConfirmed = await window.api.showConfirm('Archive this employee? They will no longer appear in the schedule options.', 'Archive Staff');
+    if (isConfirmed) {
       await window.api.archiveEmployee(id);
       loadData();
     }
@@ -68,7 +69,8 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
   };
 
   const handleDeleteRole = async (id: number) => {
-    if (confirm("Remove this role? (To edit a color, remove the role and add it again)")) {
+    const isConfirmed = await window.api.showConfirm('Delete this role?', 'Delete Role');
+    if (isConfirmed) {
       await window.api.deleteRole(id);
       loadData();
     }
@@ -119,7 +121,7 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
                 <div style={{ fontWeight: 'bold' }}>{emp.name}</div>
                 <div style={{ color: '#666', fontSize: '0.8em' }}>{emp.defaultRole}</div>
               </div>
-              <button onClick={() => handleArchiveEmployee(emp.id)} style={{ padding: '4px 8px', backgroundColor: '#ffc107', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8em' }}>Archive</button>
+              <button onClick={() => handleArchive(emp.id)} style={{ padding: '4px 8px', backgroundColor: '#ffc107', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8em' }}>Archive</button>
             </div>
           ))}
           {filteredEmployees.length === 0 && <div style={{ padding: '15px', textAlign: 'center', color: '#888' }}>No employees found.</div>}

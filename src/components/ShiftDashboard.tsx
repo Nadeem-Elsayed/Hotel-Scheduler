@@ -46,7 +46,6 @@ export default function ShiftDashboard({ onBack }: ShiftDashboardProps) {
 
   useEffect(() => { loadShifts(); }, [periodOffset]);
 
-  // Payroll Calculation
   const payrollSummary = useMemo(() => {
     const summary: Record<string, number> = {};
     shifts.forEach(s => {
@@ -66,95 +65,67 @@ export default function ShiftDashboard({ onBack }: ShiftDashboardProps) {
     setIsDrawerOpen(true);
   };
 
+  // EXPORT HANDLERS
+  const handleExportCalendar = async () => {
+    const res = await window.api.exportCalendarCSV(currentPeriod.start, currentPeriod.end);
+    if (res.success) await window.api.showMessage('Calendar exported successfully!', 'Success');
+    else if (res.error !== 'cancelled') await window.api.showMessage('Export failed: ' + res.error, 'Error');
+  };
+
+  const handleExportYearly = async () => {
+    const year = currentPeriod.start.split('-')[0];
+    const res = await window.api.exportYearlyCSV(year);
+    if (res.success) await window.api.showMessage('Yearly report exported successfully!', 'Success');
+    else if (res.error !== 'cancelled') await window.api.showMessage('Export failed: ' + res.error, 'Error');
+  };
+
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <button
-        onClick={onBack}
-        style={{ padding: "8px 16px", marginBottom: "20px", cursor: "pointer" }}
-      >
+      <button onClick={onBack} style={{ padding: "8px 16px", marginBottom: "20px", cursor: "pointer" }}>
         ← Back to Hub
       </button>
 
-      {/* Header with Title and Buttons */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '20px' 
-      }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h2 style={{ margin: 0 }}>Staff Shifts & Payroll</h2>
         
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={() => setIsStaffManagerOpen(true)}
-            style={{ 
-              padding: "10px 20px", 
-              backgroundColor: "#6c757d", 
-              color: "white", 
-              border: "none", 
-              borderRadius: "4px", 
-              cursor: "pointer", 
-              fontWeight: "bold" 
-            }}
-          >
+          <button onClick={() => setIsStaffManagerOpen(true)} style={{ padding: "10px 20px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
             Manage Staff
           </button>
-          <button
-            onClick={() => setIsFormOpen(true)}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#28a745",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
+          <button onClick={() => setIsFormOpen(true)} style={{ padding: "10px 20px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
             + Schedule Shift
           </button>
         </div>
       </div>
 
-      {/* Payroll Summary Component */}
-      <div style={{
-          marginBottom: "20px",
-          padding: "15px",
-          backgroundColor: "#f1f3f5",
-          borderRadius: "8px",
-      }}>
-        <h4 style={{ margin: "0 0 10px 0" }}>Bi-Weekly Hours Breakdown</h4>
+      <div style={{ marginBottom: "20px", padding: "15px", backgroundColor: "#f1f3f5", borderRadius: "8px" }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <h4 style={{ margin: 0 }}>Bi-Weekly Hours Breakdown</h4>
+          
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button onClick={handleExportCalendar} style={{ padding: "6px 12px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.85em" }}>
+              ↓ Export Calendar (CSV)
+            </button>
+            <button onClick={handleExportYearly} style={{ padding: "6px 12px", backgroundColor: "#17a2b8", color: "white", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.85em" }}>
+              ↓ Export Yearly Report
+            </button>
+          </div>
+        </div>
+
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           {payrollSummary.map((emp) => (
-            <div
-              key={emp.name}
-              style={{
-                backgroundColor: "white",
-                padding: "8px 12px",
-                borderRadius: "4px",
-                border: "1px solid #dee2e6",
-              }}
-            >
+            <div key={emp.name} style={{ backgroundColor: "white", padding: "8px 12px", borderRadius: "4px", border: "1px solid #dee2e6" }}>
               <span style={{ fontWeight: "bold" }}>{emp.name}:</span> {emp.hours.toFixed(2)} hrs
             </div>
           ))}
         </div>
       </div>
 
-      {/* Navigation for Pay Periods */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', marginBottom: '10px' }}>
         <button 
           onClick={() => setPeriodOffset(prev => Math.max(prev - 1, -26))}
           disabled={periodOffset <= -26}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: periodOffset <= -26 ? 'not-allowed' : 'pointer', 
-            backgroundColor: '#e9ecef', 
-            border: 'none', 
-            borderRadius: '4px', 
-            fontWeight: 'bold',
-            opacity: periodOffset <= -26 ? 0.5 : 1
-          }}
+          style={{ padding: '8px 16px', cursor: periodOffset <= -26 ? 'not-allowed' : 'pointer', backgroundColor: '#e9ecef', border: 'none', borderRadius: '4px', fontWeight: 'bold', opacity: periodOffset <= -26 ? 0.5 : 1 }}
         >
           &larr; Previous Period
         </button>
@@ -166,56 +137,19 @@ export default function ShiftDashboard({ onBack }: ShiftDashboardProps) {
         <button 
           onClick={() => setPeriodOffset(prev => Math.min(prev + 1, 26))}
           disabled={periodOffset >= 26}
-          style={{ 
-            padding: '8px 16px', 
-            cursor: periodOffset >= 26 ? 'not-allowed' : 'pointer', 
-            backgroundColor: '#e9ecef', 
-            border: 'none', 
-            borderRadius: '4px', 
-            fontWeight: 'bold',
-            opacity: periodOffset >= 26 ? 0.5 : 1
-          }}
+          style={{ padding: '8px 16px', cursor: periodOffset >= 26 ? 'not-allowed' : 'pointer', backgroundColor: '#e9ecef', border: 'none', borderRadius: '4px', fontWeight: 'bold', opacity: periodOffset >= 26 ? 0.5 : 1 }}
         >
           Next Period &rarr;
         </button>
       </div>
 
-      <ShiftCalendar
-        shifts={shifts}
-        periodStart={currentPeriod.start}
-        onDayClick={handleDayClick}
-      />
-
+      <ShiftCalendar shifts={shifts} periodStart={currentPeriod.start} onDayClick={handleDayClick} />
       <ShiftLegend />
 
-      {/* Modals and Drawers */}
-      {isRosterOpen && (
-        <DailyRoster
-          date={selectedDate}
-          shifts={shifts.filter((s) => s.shiftDate === selectedDate)}
-          onClose={() => setIsRosterOpen(false)}
-          onShiftClick={handleShiftClick}
-        />
-      )}
-
-      {isDrawerOpen && selectedShift && (
-        <ShiftDrawer
-          shift={selectedShift}
-          onClose={() => setIsDrawerOpen(false)}
-          onSuccess={loadShifts}
-        />
-      )}
-
-      {isFormOpen && (
-        <ShiftForm
-          onClose={() => setIsFormOpen(false)}
-          onSuccess={loadShifts}
-        />
-      )}
-
-      {isStaffManagerOpen && (
-        <StaffManager onClose={() => setIsStaffManagerOpen(false)} />
-      )}
+      {isRosterOpen && <DailyRoster date={selectedDate} shifts={shifts.filter((s) => s.shiftDate === selectedDate)} onClose={() => setIsRosterOpen(false)} onShiftClick={handleShiftClick} />}
+      {isDrawerOpen && selectedShift && <ShiftDrawer shift={selectedShift} onClose={() => setIsDrawerOpen(false)} onSuccess={loadShifts} />}
+      {isFormOpen && <ShiftForm onClose={() => setIsFormOpen(false)} onSuccess={loadShifts} />}
+      {isStaffManagerOpen && <StaffManager onClose={() => setIsStaffManagerOpen(false)} />}
     </div>
   );
 }

@@ -86,14 +86,14 @@ export default function ShiftDrawer({ shift, onClose, onSuccess }: ShiftDrawerPr
   };
 
   const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this shift?")) {
-      const response = await window.api.deleteShift(shift.id);
-      
-      if (response.success) {
-        onSuccess(); 
-        onClose();   
+    const isConfirmed = await window.api.showConfirm('Are you sure you want to permanently delete this record?', 'Confirm Deletion');
+    
+    if (isConfirmed) {
+      const res = await window.api.deleteShift(shift.id); // or deleteShift
+      if (res.success) {
+        onSuccess();
       } else {
-        alert('Failed to delete shift: ' + response.error);
+        await window.api.showMessage('Failed to delete: ' + res.error, 'Error');
       }
     }
   };

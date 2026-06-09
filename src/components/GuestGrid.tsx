@@ -4,6 +4,7 @@ import { Guest } from '../types';
 interface GuestGridProps {
   guests: Guest[];
   onRowClick: (guest: Guest) => void;
+  checkOutTime?: string;
 }
 
 export default function GuestGrid({ guests, onRowClick }: GuestGridProps) {

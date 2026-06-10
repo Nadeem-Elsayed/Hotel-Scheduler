@@ -88,7 +88,26 @@ export default function StaffManager({ onClose }: StaffManagerProps) {
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: 0 }}>Manage Staff Directory</h3>
-          <button onClick={onClose} style={{ cursor: 'pointer' }}>Close</button>
+          <button
+          onClick={onClose}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#c2d7ec";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#e7eff7";
+          }}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#e7eff7", // Soft off-white
+            border: "1px solid #dee2e6", // Subtle border
+            borderRadius: "6px", // Rounded corners
+            cursor: "pointer",
+            transition: "all 0.2s", // Smooth hover transition
+            fontWeight: "500", // Slightly bolder text
+          }}
+        >
+          Close
+        </button>
         </div>
 
         {/* --- ADD EMPLOYEE SECTION --- */}

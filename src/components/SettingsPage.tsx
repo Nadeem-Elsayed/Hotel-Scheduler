@@ -67,9 +67,24 @@ export default function SettingsPage({ onBack }: SettingsPageProps) {
 
   return (
     <div style={{ padding: '30px', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto', overflowY: 'auto', height: '100vh', boxSizing: 'border-box' }}>
-      <button onClick={onBack} style={{ padding: '8px 16px', marginBottom: '20px', cursor: 'pointer' }}>
-        ← Back to Hub
-      </button>
+      <button
+          onClick={onBack}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#c2d7ec";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#e7eff7";
+          }}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#e7eff7", // Soft off-white
+            border: "1px solid #dee2e6", // Subtle border
+            borderRadius: "6px", // Rounded corners
+            cursor: "pointer",
+            transition: "all 0.2s", // Smooth hover transition
+            fontWeight: "500", // Slightly bolder text
+          }}
+        >Back to hub</button>
 
       <h2 style={{ borderBottom: '2px solid #eee', paddingBottom: '10px', marginBottom: '20px' }}>Settings & System Data</h2>
 

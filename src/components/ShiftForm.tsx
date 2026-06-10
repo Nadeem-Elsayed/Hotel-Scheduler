@@ -140,7 +140,26 @@ export default function ShiftForm({ onClose, onSuccess, initialDate }: ShiftForm
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
-            <button type="button" onClick={onClose} style={{ padding: '8px 16px', cursor: 'pointer' }}>Cancel</button>
+            <button
+          onClick={onClose}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#c2d7ec";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#e7eff7";
+          }}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#e7eff7", // Soft off-white
+            border: "1px solid #dee2e6", // Subtle border
+            borderRadius: "6px", // Rounded corners
+            cursor: "pointer",
+            transition: "all 0.2s", // Smooth hover transition
+            fontWeight: "500", // Slightly bolder text
+          }}
+        >
+          Cancel
+        </button>
             <button type="submit" style={{ padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Save Shift</button>
           </div>
         </form>

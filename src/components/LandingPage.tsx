@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../assets/logo.jpg';
 
 interface LandingPageProps {
   onNavigate: (view: 'guests' | 'shifts' | 'settings') => void;
@@ -12,6 +13,16 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       position: 'relative'
     }}>
+      <img 
+  src={logo} 
+  alt="Hotel Logo" 
+  style={{ 
+    width: '100px',
+    height: '100px', 
+    borderRadius: '4px',
+    marginRight: '10px' 
+  }} 
+/>
       <h1 style={{ marginBottom: '8px', fontSize: '2.8rem', fontWeight: 800, color: '#1a202c', letterSpacing: '-0.5px' }}>
         Pod Inn Hotel
       </h1>

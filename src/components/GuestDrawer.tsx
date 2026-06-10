@@ -79,63 +79,181 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
   };
 
   return (
-    <div style={{
-      position: 'fixed', top: 0, right: 0, width: '400px', height: '100vh',
-      backgroundColor: 'white', boxShadow: '-2px 0 10px rgba(0,0,0,0.1)',
-      padding: '20px', boxSizing: 'border-box', overflowY: 'auto', zIndex: 900
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0 }}>{guest.guestName} - Room {guest.roomNumber}</h3>
-        <button onClick={onClose} style={{ cursor: 'pointer', padding: '5px 10px' }}>Close</button>
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        right: 0,
+        width: "400px",
+        height: "100vh",
+        backgroundColor: "white",
+        boxShadow: "-2px 0 10px rgba(0,0,0,0.1)",
+        padding: "20px",
+        boxSizing: "border-box",
+        overflowY: "auto",
+        zIndex: 900,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h3 style={{ margin: 0 }}>
+          {guest.guestName} - Room {guest.roomNumber}
+        </h3>
+        <button
+          onClick={onClose}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#c2d7ec";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#e7eff7";
+          }}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#e7eff7", // Soft off-white
+            border: "1px solid #dee2e6", // Subtle border
+            borderRadius: "6px", // Rounded corners
+            cursor: "pointer",
+            transition: "all 0.2s", // Smooth hover transition
+            fontWeight: "500", // Slightly bolder text
+          }}
+        >
+          Close
+        </button>
       </div>
-      
-      <hr style={{ margin: '20px 0' }} />
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+      <hr style={{ margin: "20px 0" }} />
+
+      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: '0.9em' }}>Check-In</label>
-          <input type="date" name="checkInDate" value={editData.checkInDate} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+          <label style={{ display: "block", fontSize: "0.9em" }}>
+            Check-In
+          </label>
+          <input
+            type="date"
+            name="checkInDate"
+            value={editData.checkInDate}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "6px" }}
+          />
         </div>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: '0.9em' }}>Check-Out</label>
-          <input type="date" name="checkOutDate" value={editData.checkOutDate} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+          <label style={{ display: "block", fontSize: "0.9em" }}>
+            Check-Out
+          </label>
+          <input
+            type="date"
+            name="checkOutDate"
+            value={editData.checkOutDate}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "6px" }}
+          />
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: '0.9em' }}>Total Amount ($)</label>
-          <input type="number" step="0.01" name="totalAmount" value={editData.totalAmount} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+          <label style={{ display: "block", fontSize: "0.9em" }}>
+            Total Amount ($)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            name="totalAmount"
+            value={editData.totalAmount}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "6px" }}
+          />
         </div>
         <div style={{ flex: 1 }}>
-          <label style={{ display: 'block', fontSize: '0.9em' }}>Amount Paid ($)</label>
-          <input type="number" step="0.01" name="amountPaid" value={editData.amountPaid} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+          <label style={{ display: "block", fontSize: "0.9em" }}>
+            Amount Paid ($)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            name="amountPaid"
+            value={editData.amountPaid}
+            onChange={handleChange}
+            style={{ width: "100%", padding: "6px" }}
+          />
         </div>
       </div>
 
       {/* Financial Block with Balance and ADR */}
-      <div style={{ padding: '15px', backgroundColor: computedBalance <= 0 ? '#d4edda' : '#fff3cd', borderRadius: '5px', marginBottom: '15px' }}>
-        <div style={{ fontSize: '1.2em', color: computedBalance <= 0 ? '#155724' : '#856404' }}>
+      <div
+        style={{
+          padding: "15px",
+          backgroundColor: computedBalance <= 0 ? "#d4edda" : "#fff3cd",
+          borderRadius: "5px",
+          marginBottom: "15px",
+        }}
+      >
+        <div
+          style={{
+            fontSize: "1.2em",
+            color: computedBalance <= 0 ? "#155724" : "#856404",
+          }}
+        >
           <strong>Remaining Balance: </strong> ${computedBalance.toFixed(2)}
         </div>
-        <div style={{ fontSize: '0.9em', color: '#666', marginTop: '6px' }}>
-          <strong>Avg. Daily Rate: </strong> ${adr} / night 
+        <div style={{ fontSize: "0.9em", color: "#666", marginTop: "6px" }}>
+          <strong>Avg. Daily Rate: </strong> ${adr} / night
         </div>
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em' }}>Payment Method</label>
-        <input type="text" name="paymentMethod" value={editData.paymentMethod} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+      <div style={{ marginBottom: "15px" }}>
+        <label style={{ display: "block", fontSize: "0.9em" }}>
+          Payment Method
+        </label>
+        <input
+          type="text"
+          name="paymentMethod"
+          value={editData.paymentMethod}
+          onChange={handleChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em' }}>Transaction Status</label>
-        <input type="text" name="paymentStatus" value={editData.paymentStatus} onChange={handleChange} style={{ width: '100%', padding: '6px' }} />
+      <div style={{ marginBottom: "15px" }}>
+        <label style={{ display: "block", fontSize: "0.9em" }}>
+          Transaction Status
+        </label>
+        <input
+          type="text"
+          name="paymentStatus"
+          value={editData.paymentStatus}
+          onChange={handleChange}
+          style={{ width: "100%", padding: "6px" }}
+        />
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em', fontWeight: 'bold', color: '#007bff' }}>Guest Status</label>
-        <select name="status" value={editData.status} onChange={handleChange} style={{ width: '100%', padding: '8px', border: '2px solid #007bff', borderRadius: '4px' }}>
+      <div style={{ marginBottom: "15px" }}>
+        <label
+          style={{
+            display: "block",
+            fontSize: "0.9em",
+            fontWeight: "bold",
+            color: "#007bff",
+          }}
+        >
+          Guest Status
+        </label>
+        <select
+          name="status"
+          value={editData.status}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            padding: "8px",
+            border: "2px solid #007bff",
+            borderRadius: "4px",
+          }}
+        >
           <option value="Confirmed">Confirmed</option>
           <option value="Expected">Expected (Late Arrival)</option>
           <option value="Checked In">Checked In</option>
@@ -143,9 +261,16 @@ export default function GuestDrawer({ guest, onClose, onSuccess }: GuestDrawerPr
         </select>
       </div>
 
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', fontSize: '0.9em' }}>Front Desk Notes</label>
-        <textarea name="notes" value={editData.notes} onChange={handleChange} style={{ width: '100%', padding: '6px', minHeight: '80px' }} />
+      <div style={{ marginBottom: "15px" }}>
+        <label style={{ display: "block", fontSize: "0.9em" }}>
+          Front Desk Notes
+        </label>
+        <textarea
+          name="notes"
+          value={editData.notes}
+          onChange={handleChange}
+          style={{ width: "100%", padding: "6px", minHeight: "80px" }}
+        />
       </div>
 
       <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>

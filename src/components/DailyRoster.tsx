@@ -30,7 +30,26 @@ export default function DailyRoster({ date, shifts, onClose, onShiftClick }: Dai
       <div style={{ backgroundColor: 'white', padding: '20px', borderRadius: '8px', width: '90%', height: '90%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
           <h3>Schedule for {displayDate}</h3>
-          <button onClick={onClose} style={{ cursor: 'pointer' }}>Close</button>
+          <button
+          onClick={onClose}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "#c2d7ec";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "#e7eff7";
+          }}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#e7eff7", // Soft off-white
+            border: "1px solid #dee2e6", // Subtle border
+            borderRadius: "6px", // Rounded corners
+            cursor: "pointer",
+            transition: "all 0.2s", // Smooth hover transition
+            fontWeight: "500", // Slightly bolder text
+          }}
+        >
+          Close
+        </button>
         </div>
 
         {/* Timeline Grid with explicit column tracks */}

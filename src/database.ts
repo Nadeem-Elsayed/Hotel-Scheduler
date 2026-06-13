@@ -1,6 +1,17 @@
-import sqlite3 from 'sqlite3';
 import path from 'path';
 import { app } from 'electron';
+
+if (app.isPackaged) {
+  const resourcesPath = process.resourcesPath;
+  process.env.NODE_PATH = process.env.NODE_PATH
+    ? `${resourcesPath}${path.delimiter}${process.env.NODE_PATH}`
+    : resourcesPath;
+  require('node:module').Module._initPaths();
+}
+
+const sqlite3 = app.isPackaged
+  ? require(path.join(process.resourcesPath, 'sqlite3'))
+  : require('sqlite3');
 
 const dbPath = path.join(app.getPath('userData'), 'hotel-scheduler.sqlite');
 const db = new sqlite3.Database(dbPath);
@@ -53,14 +64,14 @@ export const initDB = () => {
     // 2. Safe Migrations (Checks if column exists before adding)
     
     // Fix for Guests table status
-    db.all("PRAGMA table_info(guests)", (_, rows: any[]) => {
+    db.all("PRAGMA table_info(guests)", (_: any, rows: any[]) => {
       if (!rows.some(row => row.name === 'status')) {
         db.run(`ALTER TABLE guests ADD COLUMN status TEXT DEFAULT 'Confirmed'`);
       }
     });
 
     // Fix for Employees table status
-    db.all("PRAGMA table_info(employees)", (_, rows: any[]) => {
+    db.all("PRAGMA table_info(employees)", (_: any, rows: any[]) => {
       if (!rows.some(row => row.name === 'status')) {
         db.run(`ALTER TABLE employees ADD COLUMN status TEXT DEFAULT 'Active'`);
       }

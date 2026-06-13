@@ -6,14 +6,22 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import path from 'node:path';
+
+const runtimeResources = ['sqlite3', 'bindings', 'file-uri-to-path'];
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: path.resolve(__dirname, 'logo.ico'),
+    extraResource: runtimeResources.map((resourceName) => path.resolve(__dirname, 'node_modules', resourceName)),
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      name: 'hotel_scheduler',
+      setupIcon: path.resolve(__dirname, 'logo.ico'),
+    }),
     new MakerZIP({}, ['darwin']),
     new MakerRpm({}),
     new MakerDeb({}),

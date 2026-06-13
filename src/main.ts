@@ -9,6 +9,10 @@ if (started) {
   app.quit();
 }
 
+process.on('uncaughtException', (error) => {
+  dialog.showErrorBox('Fatal Application Error', error.toString() + '\n' + error.stack);
+});
+
 const createWindow = () => {
   // Initialize the SQLite Database file and schema
   initDB();
@@ -16,6 +20,8 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    title: 'Pod Inn Hotel Scheduler',
+    icon: path.join(__dirname, '../../icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -27,8 +33,10 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
   }
 
-  // Open the DevTools by default for development tracking
-  mainWindow.webContents.openDevTools();
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    // DevTools only in development; keep the receptionist build clean.
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 app.whenReady().then(() => {
@@ -138,7 +146,7 @@ ipcMain.handle('get-guests-by-date', async (_, targetDate: string) => {
       ORDER BY roomNumber ASC
     `;
     
-    db.all(query, [targetDate, targetDate], (err, rows) => {
+    db.all(query, [targetDate, targetDate], (err: any, rows: any[]) => {
       if (err) {
         console.error('SQL Error in get-guests-by-date:', err.message);
         reject(err);
@@ -172,7 +180,7 @@ ipcMain.handle('add-guest', async (_, guestData) => {
       guestData.status || 'Confirmed' 
     ];
 
-    db.run(query, params, function (err) {
+    db.run(query, params, function (this: any, err: any) {
       if (err) resolve({ success: false, error: err.message });
       else resolve({ success: true, id: this.lastID });
     });
@@ -194,7 +202,7 @@ ipcMain.handle('update-guest', async (_, id: number, updateData) => {
 
     const query = `UPDATE guests SET ${setClause} WHERE id = ?`;
 
-    db.run(query, params, function (err) {
+    db.run(query, params, function (this: any, err: any) {
       if (err) {
         console.error('SQL Error in update-guest:', err.message);
         resolve({ success: false, error: err.message });
@@ -218,7 +226,7 @@ ipcMain.handle('get-shifts-by-range', async (_, startDate: string, endDate: stri
       WHERE shiftDate >= ? AND shiftDate <= ? 
       ORDER BY shiftDate ASC, startTime ASC
     `;
-    db.all(query, [startDate, endDate], (err, rows) => {
+    db.all(query, [startDate, endDate], (err: any, rows: any[]) => {
       if (err) reject(err);
       else resolve(rows);
     });
@@ -235,7 +243,7 @@ ipcMain.handle('add-shift', async (_, shiftData) => {
       shiftData.startTime, shiftData.endTime, shiftData.totalHours, shiftData.notes
     ];
     
-    db.run(query, params, function(err) {
+    db.run(query, params, function (this: any, err: any) {
       if (err) resolve({ success: false, error: err.message });
       else resolve({ success: true, id: this.lastID });
     });
@@ -253,7 +261,7 @@ ipcMain.handle('update-shift', async (_, id: number, updateData) => {
 
     const query = `UPDATE shifts SET ${setClause} WHERE id = ?`;
 
-    db.run(query, params, function(err) {
+    db.run(query, params, function (this: any, err: any) {
       if (err) resolve({ success: false, error: err.message });
       else resolve({ success: true });
     });
@@ -263,7 +271,7 @@ ipcMain.handle('update-shift', async (_, id: number, updateData) => {
 // --- EMPLOYEE DIRECTORY IPC HANDLERS ---
 ipcMain.handle('get-employees', async () => {
   return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM employees ORDER BY name ASC', [], (err, rows) => {
+    db.all('SELECT * FROM employees ORDER BY name ASC', [], (err: any, rows: any[]) => {
       if (err) reject(err);
       else resolve(rows);
     });
@@ -273,7 +281,7 @@ ipcMain.handle('get-employees', async () => {
 ipcMain.handle('add-employee', async (_, empData) => {
   return new Promise((resolve) => {
     const query = `INSERT INTO employees (name, defaultRole) VALUES (?, ?)`;
-    db.run(query, [empData.name, empData.defaultRole], function (err) {
+    db.run(query, [empData.name, empData.defaultRole], function (this: any, err: any) {
       if (err) resolve({ success: false, error: err.message });
       else resolve({ success: true, id: this.lastID });
     });
@@ -283,7 +291,7 @@ ipcMain.handle('add-employee', async (_, empData) => {
 ipcMain.handle('archive-employee', async (_, id: number) => {
   return new Promise((resolve) => {
     const query = `UPDATE employees SET status = 'Archived' WHERE id = ?`;
-    db.run(query, [id], (err) => {
+    db.run(query, [id], (err: any) => {
       if (err) resolve({ success: false, error: err.message });
       else resolve({ success: true });
     });
@@ -292,7 +300,7 @@ ipcMain.handle('archive-employee', async (_, id: number) => {
 
 ipcMain.handle('get-roles', async () => {
   return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM roles', [], (err, rows) => {
+    db.all('SELECT * FROM roles', [], (err: any, rows: any[]) => {
       if (err) reject(err);
       else resolve(rows);
     });
@@ -303,7 +311,7 @@ ipcMain.handle('add-role', async (_, roleData) => {
   return new Promise((resolve) => {
     // Note: Ensure your roles table exists before running this!
     const query = `INSERT INTO roles (name, color) VALUES (?, ?)`;
-    db.run(query, [roleData.name, roleData.color], (err) => {
+    db.run(query, [roleData.name, roleData.color], (err: any) => {
       if (err) {
         console.error("Role insertion failed:", err);
         resolve({ success: false });
@@ -316,7 +324,7 @@ ipcMain.handle('add-role', async (_, roleData) => {
 
 ipcMain.handle('delete-role', async (_, id: number) => {
   return new Promise((resolve) => {
-    db.run(`DELETE FROM roles WHERE id = ?`, [id], (err) => {
+    db.run(`DELETE FROM roles WHERE id = ?`, [id], (err: any) => {
       resolve({ success: !err });
     });
   });
@@ -325,7 +333,7 @@ ipcMain.handle('delete-role', async (_, id: number) => {
 // Add this alongside your other ipcMain handlers
 ipcMain.handle('delete-shift', async (_, id: number) => {
   return new Promise((resolve) => {
-    db.run(`DELETE FROM shifts WHERE id = ?`, [id], (err) => {
+    db.run(`DELETE FROM shifts WHERE id = ?`, [id], (err: any) => {
       if (err) {
         console.error("Failed to delete shift:", err);
         resolve({ success: false, error: err.message });
@@ -338,7 +346,7 @@ ipcMain.handle('delete-shift', async (_, id: number) => {
 
 ipcMain.handle('delete-guest', async (_, id: number) => {
   return new Promise((resolve) => {
-    db.run(`DELETE FROM guests WHERE id = ?`, [id], (err) => {
+    db.run(`DELETE FROM guests WHERE id = ?`, [id], (err: any) => {
       resolve({ success: !err, error: err?.message });
     });
   });
@@ -348,7 +356,7 @@ ipcMain.handle('export-calendar-csv', async (_, startDate: string, endDate: stri
   return new Promise((resolve) => {
     const query = `SELECT * FROM shifts WHERE shiftDate >= ? AND shiftDate <= ? ORDER BY shiftDate ASC, startTime ASC`;
     
-    db.all(query, [startDate, endDate], async (err, rows) => {
+    db.all(query, [startDate, endDate], async (err: any, rows: any[]) => {
       if (err) return resolve({ success: false, error: err.message });
       
       // Google Calendar format
@@ -381,7 +389,7 @@ ipcMain.handle('export-calendar-csv', async (_, startDate: string, endDate: stri
 ipcMain.handle('export-yearly-csv', async (_, year: string) => {
   return new Promise((resolve) => {
     // 1. Query the database
-    db.all(`SELECT * FROM shifts WHERE shiftDate LIKE ? ORDER BY shiftDate ASC`, [`${year}-%`], async (err, rows: any[]) => {
+    db.all(`SELECT * FROM shifts WHERE shiftDate LIKE ? ORDER BY shiftDate ASC`, [`${year}-%`], async (err: any, rows: any[]) => {
       if (err) return resolve({ success: false, error: err.message });
       
       // 2. Format CSV data
@@ -470,7 +478,7 @@ ipcMain.handle('restore-database', async () => {
 // Fetch a setting (or return the default if it doesn't exist yet)
 ipcMain.handle('get-setting', async (_, key: string, defaultValue: string) => {
   return new Promise((resolve) => {
-    db.get(`SELECT value FROM settings WHERE key = ?`, [key], (err, row: any) => {
+    db.get(`SELECT value FROM settings WHERE key = ?`, [key], (err: any, row: any) => {
       if (err || !row) resolve(defaultValue);
       else resolve(row.value);
     });
@@ -481,7 +489,7 @@ ipcMain.handle('get-setting', async (_, key: string, defaultValue: string) => {
 ipcMain.handle('update-setting', async (_, key: string, value: string) => {
   return new Promise((resolve) => {
     const query = `INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`;
-    db.run(query, [key, value], (err) => {
+    db.run(query, [key, value], (err: any) => {
       resolve({ success: !err });
     });
   });
@@ -508,7 +516,7 @@ ipcMain.handle('purge-database', async () => {
       // 3. Purge old records from the live database
       db.serialize(() => {
         db.run(`DELETE FROM shifts WHERE shiftDate < ?`, [cutoffDate]);
-        db.run(`DELETE FROM guests WHERE checkOutDate < ?`, [cutoffDate], (err) => {
+        db.run(`DELETE FROM guests WHERE checkOutDate < ?`, [cutoffDate], (err: any) => {
           if (err) resolve({ success: false, error: err.message });
           else resolve({ success: true });
         });
@@ -599,7 +607,7 @@ ipcMain.handle('import-csv', async (_, type: 'guests' | 'shifts') => {
         if (empStmt) empStmt.finalize(); // Clean up memory
         
         // Commit the transaction to save everything at once
-        db.run('COMMIT', (err) => {
+        db.run('COMMIT', (err: any) => {
           if (err) {
             db.run('ROLLBACK');
             resolve({ success: false, error: 'Database error during commit: ' + err.message });

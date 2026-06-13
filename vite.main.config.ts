@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     rollupOptions: {
-      // Tell Vite to completely ignore this native Node module
       external: ['sqlite3'],
     },
   },

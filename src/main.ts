@@ -17,11 +17,15 @@ const createWindow = () => {
   // Initialize the SQLite Database file and schema
   initDB();
 
+  const windowIcon = app.isPackaged
+    ? path.join(process.resourcesPath, 'logo.ico')
+    : path.join(__dirname, '../../logo.ico');
+
   const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     title: 'Pod Inn Hotel Scheduler',
-    icon: path.join(__dirname, '../../icon.ico'),
+    icon: windowIcon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

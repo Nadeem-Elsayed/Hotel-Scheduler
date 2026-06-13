@@ -8,13 +8,19 @@ import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import path from 'node:path';
 
-const runtimeResources = ['sqlite3', 'bindings', 'file-uri-to-path'];
+const runtimeResources = ['sqlite3', 'bindings', 'file-uri-to-path', 'logo.ico'];
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     icon: path.resolve(__dirname, 'logo.ico'),
-    extraResource: runtimeResources.map((resourceName) => path.resolve(__dirname, 'node_modules', resourceName)),
+    extraResource: runtimeResources.map((resourceName) => {
+      if (resourceName === 'logo.ico') {
+        return path.resolve(__dirname, resourceName);
+      }
+
+      return path.resolve(__dirname, 'node_modules', resourceName);
+    }),
   },
   rebuildConfig: {},
   makers: [

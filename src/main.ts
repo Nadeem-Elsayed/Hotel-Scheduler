@@ -448,35 +448,33 @@ ipcMain.handle('open-backup-folder', async () => {
 });
 
 ipcMain.handle('restore-database', async () => {
-  return new Promise(async (resolve) => {
-    // 1. Warn the user and let them pick a .sqlite file
-    const { filePaths, canceled } = await dialog.showOpenDialog({
-      title: 'Select Database Backup to Restore',
-      properties: ['openFile'],
-      filters: [{ name: 'SQLite Database', extensions: ['sqlite', 'db'] }],
-      message: 'WARNING: This will completely overwrite your current live data. The application will restart.'
-    });
-
-    if (canceled || filePaths.length === 0) {
-      return resolve({ success: false, error: 'cancelled' });
-    }
-
-    const selectedBackupPath = filePaths[0];
-    const liveDbPath = path.join(app.getPath('userData'), 'hotel-scheduler.sqlite');
-
-    try {
-      // 2. Overwrite the live database with the selected backup
-      fs.copyFileSync(selectedBackupPath, liveDbPath);
-      
-      // 3. Relaunch the application to load the new database into memory
-      app.relaunch();
-      app.exit(0);
-      resolve({ success: true }); 
-    } catch (err: any) {
-      console.error("Failed to restore database:", err);
-      resolve({ success: false, error: err.message });
-    }
+  // 1. Warn the user and let them pick a .sqlite file
+  const { filePaths, canceled } = await dialog.showOpenDialog({
+    title: 'Select Database Backup to Restore',
+    properties: ['openFile'],
+    filters: [{ name: 'SQLite Database', extensions: ['sqlite', 'db'] }],
+    message: 'WARNING: This will completely overwrite your current live data. The application will restart.'
   });
+
+  if (canceled || filePaths.length === 0) {
+    return { success: false, error: 'cancelled' };
+  }
+
+  const selectedBackupPath = filePaths[0];
+  const liveDbPath = path.join(app.getPath('userData'), 'hotel-scheduler.sqlite');
+
+  try {
+    // 2. Overwrite the live database with the selected backup
+    fs.copyFileSync(selectedBackupPath, liveDbPath);
+    
+    // 3. Relaunch the application to load the new database into memory
+    app.relaunch();
+    app.exit(0);
+    return { success: true }; 
+  } catch (err: any) {
+    console.error("Failed to restore database:", err);
+    return { success: false, error: err.message };
+  }
 });
 
 // Fetch a setting (or return the default if it doesn't exist yet)
@@ -532,15 +530,16 @@ ipcMain.handle('purge-database', async () => {
 });
 
 ipcMain.handle('import-csv', async (_, type: 'guests' | 'shifts') => {
-  return new Promise(async (resolve) => {
-    // 1. Let the user select the CSV file
-    const { filePaths, canceled } = await dialog.showOpenDialog({
-      title: `Import ${type.toUpperCase()} CSV`,
-      properties: ['openFile'],
-      filters: [{ name: 'CSV Files', extensions: ['csv'] }]
-    });
+  // 1. Let the user select the CSV file
+  const { filePaths, canceled } = await dialog.showOpenDialog({
+    title: `Import ${type.toUpperCase()} CSV`,
+    properties: ['openFile'],
+    filters: [{ name: 'CSV Files', extensions: ['csv'] }]
+  });
 
-    if (canceled || filePaths.length === 0) return resolve({ success: false, error: 'cancelled' });
+  if (canceled || filePaths.length === 0) return { success: false, error: 'cancelled' };
+
+  return new Promise((resolve) => {
 
     try {
       // 2. Read the file

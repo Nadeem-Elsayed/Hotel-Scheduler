@@ -1,10 +1,18 @@
 {
   "name": "hotel-scheduler",
   "productName": "hotel-scheduler",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "1.0.1",
+  "description": "Desktop hotel operations and management workstation for daily guest operations, front-desk ledger, staff scheduling, and payroll reporting.",
   "main": ".vite/build/main.js",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nadeem-Elsayed/Hotel-Scheduler.git"
+  },
+  "homepage": "https://github.com/Nadeem-Elsayed/Hotel-Scheduler#readme",
+  "bugs": {
+    "url": "https://github.com/Nadeem-Elsayed/Hotel-Scheduler/issues"
+  },
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
@@ -12,7 +20,16 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
-  "keywords": [],
+  "keywords": [
+    "hotel-management",
+    "guest-ledger",
+    "staff-scheduling",
+    "payroll",
+    "electron",
+    "react",
+    "sqlite",
+    "desktop-app"
+  ],
   "author": {
     "name": "Nadeem Elsayed",
     "email": "elsayednadeem.ne@gmail.com"

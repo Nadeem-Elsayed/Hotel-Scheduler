@@ -6,6 +6,7 @@ if (app.isPackaged) {
   process.env.NODE_PATH = process.env.NODE_PATH
     ? `${resourcesPath}${path.delimiter}${process.env.NODE_PATH}`
     : resourcesPath;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   require('node:module').Module._initPaths();
 }
 

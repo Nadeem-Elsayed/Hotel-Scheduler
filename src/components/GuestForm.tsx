@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Guest } from '../types';
 
 interface GuestFormProps {
   onClose: () => void;

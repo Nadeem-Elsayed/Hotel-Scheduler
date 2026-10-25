@@ -46,3 +46,4 @@ jobs:
             out/make/squirrel.windows/x64/*.nupkg
             out/make/squirrel.windows/x64/RELEASES
           generate_release_notes: true
+

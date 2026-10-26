@@ -1,6 +1,7 @@
 # Hotel Scheduler & Operations Hub
 
 A desktop application designed for hotel front-desk operations, guest reservation management, staff shift scheduling, and bi-weekly payroll tracking. Built with Electron, React, TypeScript, and SQLite, it runs entirely offline with local data storage.
+
 Demo:
 https://www.youtube.com/watch?v=x3I1jGSUBXk
 

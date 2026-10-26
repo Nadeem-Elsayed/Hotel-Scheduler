@@ -1,4 +1,4 @@
-# Release Notes - Hotel Scheduler v1.0.1
+# Release Notes - Hotel Scheduler v1.0.2
 
 ### Highlights & Features
 
@@ -31,6 +31,6 @@
 ---
 
 ### Release Assets
-* **Windows Installer:** `hotel-scheduler-1.0.1 Setup.exe`
-* **Squirrel Package:** `hotel_scheduler-1.0.1-full.nupkg`
+* **Windows Installer:** `hotel-scheduler-1.0.2 Setup.exe`
+* **Squirrel Package:** `hotel_scheduler-1.0.2-full.nupkg`
 * **Release Manifest:** `RELEASES`

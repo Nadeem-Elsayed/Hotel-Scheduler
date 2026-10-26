@@ -1,7 +1,7 @@
 {
   "name": "hotel-scheduler",
   "productName": "hotel-scheduler",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Desktop hotel operations and management workstation for daily guest operations, front-desk ledger, staff scheduling, and payroll reporting.",
   "main": ".vite/build/main.js",
   "private": true,
